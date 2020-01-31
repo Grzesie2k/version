@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -12,8 +13,24 @@ import (
 )
 
 func main() {
+	cmd := ""
+	if len(os.Args) > 1 {
+		cmd = os.Args[1]
+	}
+
 	v := version()
-	fmt.Println(namespace(v))
+
+	switch cmd {
+	case "ns":
+		fmt.Println(namespace(v))
+		break
+	case "version":
+		fmt.Println(printVersion(v))
+		break
+	default:
+		fmt.Println("Use: " + os.Args[0] + " version")
+		fmt.Println("Use: " + os.Args[0] + " ns")
+	}
 }
 
 func git(args ...string) (string, error) {
@@ -213,7 +230,7 @@ func printVersion(version Version) string {
 	case RC:
 		return fmt.Sprintf("v%d.%d.%d-%s", version.major, version.minor, version.patch, version.commitSha[0:8])
 	default:
-		return fmt.Sprintf("dev-%s-%s", version.commitSha[0:8])
+		return fmt.Sprintf("dev-%s", version.commitSha[0:8])
 	}
 }
 
